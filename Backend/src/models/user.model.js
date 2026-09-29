@@ -13,7 +13,6 @@ const userSchema = new mongooes.Schema({
     },
     password:{
         type:String,
-        unique:true,
         required:true
     }
 })
