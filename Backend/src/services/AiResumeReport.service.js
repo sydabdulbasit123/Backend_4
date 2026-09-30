@@ -98,23 +98,39 @@ async function GenerateInterviewReport({
   selfDescription,
   jobDescription,
 }) {
-  const prompt = `
+ const prompt = `
 Generate an interview report for this candidate.
 
-Resume:
-${Resume}
+Resume: ${Resume}
+Self Description: ${selfDescription}
+Job Description: ${jobDescription}
 
-Self Description:
-${selfDescription}
+Return ONLY a JSON object matching EXACTLY this schema:
+{
+  "matchScore": number (0-100),
+  "technicalQuestions": [
+    { "question": string, "intention": string, "answer": string }
+  ],
+  "behavioralQuestions": [
+    { "question": string, "intention": string, "answer": string }
+  ],
+  "skillGaps": [
+    { "skill": string, "severity": "low" | "medium" | "high" }
+  ],
+  "preparationPlan": [
+    { "day": number, "focus": string, "tasks": [string] }
+  ],
+  "title": string
+}
 
-Job Description:
-${jobDescription}
-
-Return ONLY valid JSON matching the provided schema.
+Rules:
+- Output raw JSON only. No markdown fences.
+- Every key above MUST be present.
+- "severity" must be "low", "medium", or "high".
 `;
 
   const response = await openai.chat.completions.create({
-    model: "qwen/qwen3.8-27b:free",
+    model: "openrouter/free",
 
     messages: [
       {

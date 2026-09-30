@@ -5,8 +5,28 @@ const {Resume , selfDescription , jobDescription} = require("./src/models/Temp.j
 const GenerateInterviewReport = require("./src/services/AiResumeReport.service.js")
 
 connectdb()
-GenerateInterviewReport({Resume , selfDescription , jobDescription})
+//ai response....
 
+console.log("AI CALL STARTING...");
+
+GenerateInterviewReport({
+  Resume,
+  selfDescription,
+  jobDescription,
+})
+  .then((result) => {
+    console.log("AI RESPONSE RECEIVED:");
+    console.log(JSON.stringify(result, null, 2));
+  })
+  .catch((error) => {
+    console.error("AI ERROR:");
+    console.error(error);
+  });
+
+console.log("AI CALL SENT...");
+
+
+//
 app.listen(process.env.PORT, ()=>{
     console.log(`SERVER IS RUNNING ON ${process.env.PORT}`)
 })
