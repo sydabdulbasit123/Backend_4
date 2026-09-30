@@ -22,7 +22,10 @@
     "jsonwebtoken": "^9.0.3",
     "mongodb": "^7.6.0",
     "mongoose": "^9.10.2",
-    "nodemon": "^3.1.14"
+    "nodemon": "^3.1.14",
+    "openai": "^7.25.0",
+    "zod": "^4.6.5",
+    "zod-to-json-schema": "^3.25.2"
   },
   "allowScripts": {
     "bcrypt@6.0.0": true
