@@ -42,7 +42,7 @@ const SkillGapSchema = new mongoose.Schema(
       type: String,
       required: [true, "Skill is required"],
     },
-    serverity: {
+    severity: {
       type: String,
       enum: ["low", "medium", "high"],
       required: [true, "Severity is required"],
@@ -62,36 +62,38 @@ const preprationPlanSchema = new mongoose.Schema(
   { _id: false },
 );
 
-const interviewReportSchema = new mongoose.Schema({
-  jobDescription: {
-    type: String,
-    required: [true, "Job description is required"],
+const interviewReportSchema = new mongoose.Schema(
+  {
+    jobDescription: {
+      type: String,
+      required: [true, "Job description is required"],
+    },
+    resume: {
+      type: String,
+    },
+    selfDescrpition: {
+      type: String,
+    },
+    matchScore: {
+      type: Number,
+      min: 0,
+      max: 100,
+    },
+    technicalQuestions: [technicalQuestionSchema],
+    behavioralQuestions: [BehavioralQuestionSchema],
+    skillGaps: [SkillGapSchema],
+    preprationPlan: [preprationPlanSchema],
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "user",
+    },
   },
-  resume: {
-    type: String,
-  },
-  selfDescrpition: {
-    type: String,
-  },
-  matchScore: {
-    type: Number,
-    min: 0,
-    max: 100,
-  },
-  technicalQuestions:  [technicalQuestionSchema] ,
-  behavioralQuestions:  [BehavioralQuestionSchema] ,
-  skillGaps: [SkillGapSchema] ,
-  preprationPlan:  [preprationPlanSchema] ,
-  user:{
-    type:mongoose.Schema.Types.ObjectId,
-    ref:user
-  }
-});
+  { timestamps: true },
+);
 
 const interviewReportModel = mongoose.model(
   "interviewReport",
   interviewReportSchema,
 );
-
 
 module.exports = interviewReportModel;

@@ -93,7 +93,7 @@ const interviewReportSchema = z.object({
     ),
 });
 
-async function GenerateInterviewReport({
+async function InterViewReportByAi({
   Resume,
   selfDescription,
   jobDescription,
@@ -154,4 +154,4 @@ Rules:
   return JSON.parse(content);
 }
 
-module.exports = GenerateInterviewReport;
+module.exports = {InterViewReportByAi};

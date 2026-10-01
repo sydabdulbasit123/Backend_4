@@ -22,8 +22,10 @@
     "jsonwebtoken": "^9.0.3",
     "mongodb": "^7.6.0",
     "mongoose": "^9.10.2",
+    "multer": "^2.4.0",
     "nodemon": "^3.1.14",
     "openai": "^7.25.0",
+    "pdf-parse": "^2.4.5",
     "zod": "^4.6.5",
     "zod-to-json-schema": "^3.25.2"
   },
