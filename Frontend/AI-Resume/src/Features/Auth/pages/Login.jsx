@@ -21,17 +21,17 @@ const Login = () => {
   };
 
   const inputStyle =
-    "w-full rounded-lg bg-white/90 px-4 py-2.5 text-slate-900 placeholder-slate-400 outline-none focus:ring-2 focus:ring-indigo-400 transition";
+    "w-full rounded-lg border border-white/5 bg-[#1a1e28] px-4 py-2.5 text-slate-200 placeholder:text-slate-500 outline-none transition focus:border-[#ff2d6f]/60 focus:ring-1 focus:ring-[#ff2d6f]/40";
 
   if (loading) {
     return <Loading />;
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900 px-4">
+    <main className="min-h-screen flex items-center justify-center bg-[#0b0d12] px-4">
       <form
         onSubmit={(e) => Formhandler(e)}
-        className="w-full max-w-md bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-2xl p-8 space-y-6"
+        className="w-full max-w-md rounded-2xl border border-white/5 bg-[#10131a] p-8 shadow-2xl shadow-black/40 space-y-6"
       >
         <h1 className="text-2xl font-bold text-white text-center">
           Welcome Back
@@ -75,7 +75,7 @@ const Login = () => {
 
         <button
           type="submit"
-          className="w-full rounded-lg bg-indigo-500 py-2.5 font-semibold text-white hover:bg-indigo-400 active:scale-[0.98] transition"
+          className="w-full rounded-lg bg-[#ff2d6f] py-2.5 font-semibold text-white transition hover:bg-[#ff4381] active:scale-[0.98]"
         >
           Login
         </button>
@@ -83,7 +83,7 @@ const Login = () => {
           Don't have an account?{" "}
           <span
             onClick={() => navigate("/register")}
-            className="text-indigo-400 hover:underline cursor-pointer"
+            className="cursor-pointer text-[#ff4d85] hover:underline"
           >
             Register
           </span>

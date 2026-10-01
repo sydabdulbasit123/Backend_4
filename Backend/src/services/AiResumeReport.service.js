@@ -12,7 +12,7 @@ const interviewReportSchema = z.object({
     .number()
     .describe(
       "A score between 0 and 100 indicating how well the candidate's profile matches the job describe",
-    ),
+    ).min(0).max(100),
   technicalQuestions: z
     .array(
       z.object({
@@ -28,7 +28,7 @@ const interviewReportSchema = z.object({
             "How to answer this question, what points to cover, what approach to take etc.",
           ),
       }),
-    )
+    ).min(3)
     .describe(
       "Technical questions that can be asked in the interview along with their intention and how to answer them",
     ),
@@ -47,7 +47,7 @@ const interviewReportSchema = z.object({
             "How to answer this question, what points to cover, what approach to take etc.",
           ),
       }),
-    )
+    ).min(3)
     .describe(
       "Behavioral questions that can be asked in the interview along with their intention and how to answer them",
     ),
@@ -61,7 +61,7 @@ const interviewReportSchema = z.object({
             "The severity of this skill gap, i.e. how important is this skill for the job and how much it can impact the candidate's chances",
           ),
       }),
-    )
+    ).min(4)
     .describe(
       "List of skill gaps in the candidate's profile along with their severity",
     ),
@@ -77,12 +77,12 @@ const interviewReportSchema = z.object({
             "The main focus of this day in the preparation plan, e.g. data structures, system design, mock interviews etc.",
           ),
         tasks: z
-          .array(z.string())
+          .array(z.string()).min(2)
           .describe(
             "List of tasks to be done on this day to follow the preparation plan, e.g. read a specific book or article, solve a set of problems, watch a video etc.",
           ),
       }),
-    )
+    ).min(5)
     .describe(
       "A day-wise preparation plan for the candidate to follow in order to prepare for the interview effectively",
     ),
@@ -98,7 +98,7 @@ async function InterViewReportByAi({
   selfDescription,
   jobDescription,
 }) {
- const prompt = `
+  const prompt = `
 Generate an interview report for this candidate.
 
 Resume: ${Resume}
@@ -124,6 +124,12 @@ Return ONLY a JSON object matching EXACTLY this schema:
 }
 
 Rules:
+- "technicalQuestions": at least 3 items, each with non-empty question, intention, answer
+- "behavioralQuestions": at least 3 items, each with non-empty question, intention,answer
+- "skillGaps": at least 4 items, each with non-empty skill and a valid severity
+- "preparationPlan": at least 5 days, each with at least 3 tasks
+- No field may be empty, null, "", or []
+- Every array must contain the minimum number of items specified
 - Output raw JSON only. No markdown fences.
 - Every key above MUST be present.
 - "severity" must be "low", "medium", or "high".
@@ -147,6 +153,7 @@ Rules:
         schema: zodToJsonSchema(interviewReportSchema),
       },
     },
+    max_tokens: 4000,
   });
 
   const content = response.choices[0].message.content;
@@ -154,4 +161,4 @@ Rules:
   return JSON.parse(content);
 }
 
-module.exports = {InterViewReportByAi};
+module.exports = { InterViewReportByAi };

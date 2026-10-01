@@ -1,13 +1,13 @@
 const { Router } = require("express");
 const upload = require("../middlewares/InterView.middleware");
 const authMiddleware = require("../middlewares/auth.middleware");
-const interViewContentGenerateByAI = require("../controllers/Interview.controller");
+const {interViewContentGenerateByAI} = require("../controllers/Interview.controller");
 
 const aiRouter = Router();
 
 aiRouter.post(
   "/",
-  authMiddleware,
+  authMiddleware.authUser,
   upload.single("Resume"),
   interViewContentGenerateByAI,
 );

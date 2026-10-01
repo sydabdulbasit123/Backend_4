@@ -3,6 +3,7 @@ import Register from "./Features/Auth/pages/Register";
 import Login from "./Features/Auth/pages/Login";
 import Home from "./Features/Ai/pages/Home";
 import Protected from "./Features/Auth/components/Protected.jsx";
+import InterviewPage from "./Features/Ai/pages/Interview.jsx";
 
 const Router = () => {
   return (
@@ -19,6 +20,7 @@ const Router = () => {
             </Protected>
           }
         />
+        <Route path="/interview/:interviewId" element={<InterviewPage/>}/>
       </Routes>
     </BrowserRouter>
   );
