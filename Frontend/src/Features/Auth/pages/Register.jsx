@@ -14,8 +14,10 @@ const Register = () => {
   const Formhandler = async (e) => {
     e.preventDefault();
 
-    await registerHandler({ username, email, password });
-    navigate("/login");
+    const data = await registerHandler({ username, email, password });
+    if(data){
+      navigate("/login");
+    }
 
     setUsername("");
     setEmail("");

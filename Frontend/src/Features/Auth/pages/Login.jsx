@@ -12,10 +12,15 @@ const Login = () => {
 
   const Formhandler = async (e) => {
     e.preventDefault();
-    await loginHandler({ email, password });
+    try {
+      const data = await loginHandler({ email, password });
 
-    navigate("/");
-
+      if (data) {
+        navigate("/");
+      }
+    } catch (error) {
+      console.log("LOGIN FAILED:", error);
+    }
     setEmail("");
     setPassword("");
   };

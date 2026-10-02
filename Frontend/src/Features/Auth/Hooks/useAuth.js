@@ -1,6 +1,7 @@
-import { useContext, useEffect } from "react";
-import { login, register, logout, getMe } from "../services/api.auth";
+import { useContext,} from "react";
+import { login, register, logout,} from "../services/api.auth";
 import { AuthContext } from "../AuthContext";
+import toast from "react-hot-toast";
 
 const useAuth = () => {
   const context = useContext(AuthContext);
@@ -13,6 +14,7 @@ const useAuth = () => {
       setUser(data.user);
       return data;
     } catch (error) {
+      toast.error(error.response?.data?.message || "Registration failed");
       console.log(error);
     } finally {
       setLoading(false);
@@ -26,6 +28,7 @@ const useAuth = () => {
       setUser(data.user);
       return data;
     } catch (error) {
+      toast.error(error.response?.data?.message || "Login failed");
       console.log(error);
     } finally {
       setLoading(false);
@@ -44,21 +47,6 @@ const useAuth = () => {
     }
   };
 
-useEffect(() => {
-  const getAndSetUser = async () => {
-    try {
-      const data = await getMe();
-      setUser(data.user);
-    } catch (error) {
-      console.log(error)
-      setUser(null);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  getAndSetUser();
-}, []);
 
   return { user, loading, loginHandler, registerHandler, logoutHandler };
 };
