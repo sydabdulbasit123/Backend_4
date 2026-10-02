@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Register from "./Features/Auth/pages/Register";
-import Login from "./Features/Auth/pages/Login";
-import Home from "./Features/Ai/pages/Home";
+import Register from "./Features/Auth/pages/Register.jsx";
+import Login from "./Features/Auth/pages/Login.jsx";
+import Home from "./Features/Ai/pages/Home.jsx";
 import Protected from "./Features/Auth/components/Protected.jsx";
 import InterviewPage from "./Features/Ai/pages/Interview.jsx";
 

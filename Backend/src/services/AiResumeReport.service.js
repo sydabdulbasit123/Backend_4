@@ -127,7 +127,7 @@ Rules:
 - "technicalQuestions": at least 3 items, each with non-empty question, intention, answer
 - "behavioralQuestions": at least 3 items, each with non-empty question, intention,answer
 - "skillGaps": at least 4 items, each with non-empty skill and a valid severity
-- "preparationPlan": at least 5 days, each with at least 3 tasks
+- "preparationPlan": at least 5 days, each with at least 2 tasks
 - No field may be empty, null, "", or []
 - Every array must contain the minimum number of items specified
 - Output raw JSON only. No markdown fences.
@@ -153,12 +153,28 @@ Rules:
         schema: zodToJsonSchema(interviewReportSchema),
       },
     },
-    max_tokens: 4000,
+    max_tokens: 8000,
   });
 
-  const content = response.choices[0].message.content;
+const content = response.choices[0].message.content;
 
-  return JSON.parse(content);
+console.log("AI RAW RESPONSE:");
+console.log(content);
+
+try {
+  const parsed = JSON.parse(content);
+
+  const validatedReport = interviewReportSchema.parse(parsed);
+
+  console.log("✅ AI JSON + ZOD VALIDATION SUCCESS");
+
+  return validatedReport;
+} catch (error) {
+  console.error("❌ AI RESPONSE ERROR:", error);
+  console.error("RAW AI RESPONSE:", JSON.stringify(content));
+
+  throw new Error("AI returned invalid JSON");
+}
 }
 
 module.exports = { InterViewReportByAi };

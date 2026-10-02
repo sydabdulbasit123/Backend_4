@@ -8,7 +8,9 @@ async function interViewContentGenerateByAI(req, res) {
       message: "Resume PDF is required",
     });
   }
-  const resumecontent = await (new pdfparse.PDFParse(Uint8Array.from(req.file.buffer))).getText()
+  const resumecontent = await new pdfparse.PDFParse(
+    Uint8Array.from(req.file.buffer),
+  ).getText();
   const { jobDescription, selfDescription } = req.body;
 
   const GenerateReport = await InterViewReportByAi({
@@ -16,7 +18,6 @@ async function interViewContentGenerateByAI(req, res) {
     selfDescription,
     jobDescription,
   });
-  
 
   const interviewReport = await interviewReportModel.create({
     user: req.user._id,
@@ -32,4 +33,46 @@ async function interViewContentGenerateByAI(req, res) {
   });
 }
 
-module.exports = {interViewContentGenerateByAI};
+async function getInterViewReport(req, res) {
+  try {
+    const report =await interviewReportModel
+      .findOne({ user: req.user._id })
+      .sort({ createdAt: -1 });
+    if (!report) {
+      return res.status(404).json({
+        message: "No interview report found for the user.",
+      });
+    }
+    res.status(200).json({
+      message: "Interview report found.",
+      report,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "failed to fetch interview report",
+    });
+  }
+}
+
+async function getAllInterViewReport(req, res) {
+  try {
+    const reports = await interviewReportModel
+      .find({ user: req.user._id })
+      .sort({ createdAt: -1 });
+    if (!reports) {
+      return res.status(404).json({
+        message: "No interview report found for the user.",
+      });
+    }
+    res.status(200).json({
+      message: "Interview reports found.",
+      reports,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "failed to fetch interview report",
+    });
+  }
+}
+
+module.exports = { interViewContentGenerateByAI, getInterViewReport , getAllInterViewReport };

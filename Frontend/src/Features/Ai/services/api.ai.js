@@ -4,13 +4,10 @@ const api = axios.create({
   baseURL: "http://localhost:4000",
   withCredentials: true,
 })
-export async function interviewReport({ jobDescription, selfDescription, resume }) {
+export async function interviewReport(formdata) {
   try {
-    const response = await api.post("/api/interview/", {
-    jobDescription,
-    selfDescription,
-    resume,
-  });
+    const response = await api.post("/api/interview/", formdata
+  );
 
     return response.data;
   } catch (err) {

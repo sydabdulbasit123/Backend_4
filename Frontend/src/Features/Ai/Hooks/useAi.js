@@ -6,18 +6,10 @@ const useAi = () => {
   const context = useContext(AiContext);
   const { report, setReport, loading, setLoading } = context;
 
-  const interviewReportHandler = async ({
-    jobDescription,
-    selfDescription,
-    resume,
-  }) => {
+  const interviewReportHandler = async (formdata) => {
     setLoading(true);
     try {
-      const data = await interviewReport({
-        jobDescription,
-        selfDescription,
-        resume,
-      });
+      const data = await interviewReport(formdata);
       setReport(data.interviewReport);
       return data;
     } catch (error) {
