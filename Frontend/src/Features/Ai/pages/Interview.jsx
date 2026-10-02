@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import useAi from "../Hooks/useAi";
 
 /* ------------------------------------------------------------------
    Layout (from your wireframe):
@@ -13,7 +14,11 @@ import { useState } from "react";
 
 const NAV = [
   { id: "technical", label: "Technical Questions", key: "technicalQuestions" },
-  { id: "behavioral", label: "Behavioral Questions", key: "behavioralQuestions" },
+  {
+    id: "behavioral",
+    label: "Behavioral Questions",
+    key: "behavioralQuestions",
+  },
   { id: "roadmap", label: "Road Map", key: "preparationPlan" },
 ];
 
@@ -30,8 +35,19 @@ function MatchScore({ score }) {
   const c = 2 * Math.PI * r;
   return (
     <div className="flex items-center gap-4">
-      <svg viewBox="0 0 72 72" className="h-16 w-16 -rotate-90" aria-hidden="true">
-        <circle cx="36" cy="36" r={r} fill="none" stroke="#1f2430" strokeWidth="6" />
+      <svg
+        viewBox="0 0 72 72"
+        className="h-16 w-16 -rotate-90"
+        aria-hidden="true"
+      >
+        <circle
+          cx="36"
+          cy="36"
+          r={r}
+          fill="none"
+          stroke="#1f2430"
+          strokeWidth="6"
+        />
         <circle
           cx="36"
           cy="36"
@@ -88,13 +104,17 @@ function QuestionCard({ item, index }) {
             <h4 className="mb-1 text-xs font-semibold text-[#ff4d85]">
               Why they ask this
             </h4>
-            <p className="text-sm leading-relaxed text-slate-400">{item.intention}</p>
+            <p className="text-sm leading-relaxed text-slate-400">
+              {item.intention}
+            </p>
           </div>
           <div>
             <h4 className="mb-1 text-xs font-semibold text-emerald-400">
               How to answer
             </h4>
-            <p className="text-sm leading-relaxed text-slate-300">{item.answer}</p>
+            <p className="text-sm leading-relaxed text-slate-300">
+              {item.answer}
+            </p>
           </div>
         </div>
       )}
@@ -121,7 +141,8 @@ function RoadMap({ plan = [] }) {
   const steps = plan
     .map((p, i) => ({
       day: p.day ?? i + 1,
-      title: p.focus ?? p.title ?? (typeof p.skill === "string" ? p.skill : null),
+      title:
+        p.focus ?? p.title ?? (typeof p.skill === "string" ? p.skill : null),
       tasks: p.tasks ?? p.skill?.tasks ?? [],
     }))
     .filter((s) => s.tasks.length > 0);
@@ -151,7 +172,10 @@ function RoadMap({ plan = [] }) {
               </h3>
               <ul className="mt-2 space-y-1.5">
                 {s.tasks.map((t, i) => (
-                  <li key={i} className="text-sm leading-relaxed text-slate-400">
+                  <li
+                    key={i}
+                    className="text-sm leading-relaxed text-slate-400"
+                  >
                     {typeof t === "string" ? t : t.task}
                   </li>
                 ))}
@@ -198,8 +222,27 @@ function SkillGaps({ gaps = [] }) {
 
 /* ---------- page ---------- */
 
-export default function InterviewPage({ report = SAMPLE_REPORT }) {
+export default function InterviewPage() {
   const [active, setActive] = useState("technical");
+  const [report, setreport] = useState(null);
+
+  const { GetReportHandler } = useAi();
+
+  useEffect(() => {
+    const fetchreport = async () => {
+      try {
+        const reports = await GetReportHandler();
+
+        if (reports.length > 0) {
+          setreport(reports[0]);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchreport();
+  }, []);
 
   const counts = {
     technical: report.technicalQuestions?.length ?? 0,
@@ -269,62 +312,65 @@ export default function InterviewPage({ report = SAMPLE_REPORT }) {
 
 /* ---------- sample data (replace with your API response) ---------- */
 
-const SAMPLE_REPORT = {
-  matchScore: 95,
-  technicalQuestions: [
-    {
-      question:
-        "Design a distributed cache system similar to DistriCache, focusing on consistency, fault tolerance, and scalability. How would you handle partitioning and replication?",
-      intention:
-        "To assess system design skills, understanding of distributed systems concepts, and ability to scale.",
-      answer:
-        "I would design a distributed cache using consistent hashing for partitioning, with replication for fault tolerance. Each node would be responsible for a range of keys. For consistency, I'd use a quorum-based approach for reads and writes. To handle failures, I'd implement heartbeats and automatic failover. The system would be designed to be horizontally scalable by adding more nodes.",
-    },
-    {
-      question:
-        "How would you optimize a Spring Boot application for high throughput and low latency, considering your experience with the checkout API?",
-      intention:
-        "To evaluate knowledge of Java performance tuning, caching strategies, and asynchronous processing.",
-      answer:
-        "I would use caching (Redis) for frequently accessed data, optimize database queries, and use asynchronous processing (Kafka) for non-critical tasks. JVM tuning for garbage collection and connection pooling would also be important. Additionally, I'd profile the application to identify bottlenecks.",
-    },
-    {
-      question:
-        "Design a highly available and scalable order processing system on AWS. What services would you use and why?",
-      intention:
-        "To test AWS knowledge, system architecture, and ability to choose the right services for the job.",
-      answer:
-        "I would use ECS for container orchestration, RDS for relational data, DynamoDB for NoSQL, SQS for message queuing, and Lambda for serverless processing. For high availability, I'd use multiple Availability Zones and auto-scaling. For scalability, I'd design stateless services and use load balancers.",
-    },
-  ],
-  behavioralQuestions: [
-    {
-      question:
-        "Tell me about a time you owned a service end-to-end and how you handled a production incident.",
-      intention: "To assess ownership, incident response, and problem-solving skills.",
-      answer:
-        "When I owned the order-orchestration service, we experienced a latency spike. I led the investigation, identified a database lock issue, and implemented a fix. We then conducted a post-mortem to prevent recurrence.",
-    },
-    {
-      question:
-        "How have you mentored junior engineers? Give an example of how you helped them grow.",
-      intention: "To evaluate mentorship, leadership, and team development skills.",
-      answer:
-        "I mentored three SDE-1s by conducting design reviews, pairing on code, and providing feedback. One junior engineer struggled with system design, so I guided them through a project, which improved their confidence and skills.",
-    },
-    {
-      question:
-        "Describe a time you had to make a trade-off between performance and cost. How did you approach it?",
-      intention: "To test decision-making, prioritization, and business awareness.",
-      answer:
-        "When optimizing the checkout API, we considered using more powerful instances for lower latency but higher cost. We chose a balanced approach by caching and optimizing queries, which reduced latency without significantly increasing costs.",
-    },
-  ],
-  skillGaps: [
-    { skill: "Kubernetes", severity: "medium" },
-    { skill: "Terraform", severity: "medium" },
-    { skill: "AI/LLM integrations", severity: "high" },
-    { skill: "Multi-cloud or hybrid cloud experience", severity: "low" },
-  ],
-  preparationPlan: [],
-};
+// const SAMPLE_REPORT = {
+//   matchScore: 95,
+//   technicalQuestions: [
+//     {
+//       question:
+//         "Design a distributed cache system similar to DistriCache, focusing on consistency, fault tolerance, and scalability. How would you handle partitioning and replication?",
+//       intention:
+//         "To assess system design skills, understanding of distributed systems concepts, and ability to scale.",
+//       answer:
+//         "I would design a distributed cache using consistent hashing for partitioning, with replication for fault tolerance. Each node would be responsible for a range of keys. For consistency, I'd use a quorum-based approach for reads and writes. To handle failures, I'd implement heartbeats and automatic failover. The system would be designed to be horizontally scalable by adding more nodes.",
+//     },
+//     {
+//       question:
+//         "How would you optimize a Spring Boot application for high throughput and low latency, considering your experience with the checkout API?",
+//       intention:
+//         "To evaluate knowledge of Java performance tuning, caching strategies, and asynchronous processing.",
+//       answer:
+//         "I would use caching (Redis) for frequently accessed data, optimize database queries, and use asynchronous processing (Kafka) for non-critical tasks. JVM tuning for garbage collection and connection pooling would also be important. Additionally, I'd profile the application to identify bottlenecks.",
+//     },
+//     {
+//       question:
+//         "Design a highly available and scalable order processing system on AWS. What services would you use and why?",
+//       intention:
+//         "To test AWS knowledge, system architecture, and ability to choose the right services for the job.",
+//       answer:
+//         "I would use ECS for container orchestration, RDS for relational data, DynamoDB for NoSQL, SQS for message queuing, and Lambda for serverless processing. For high availability, I'd use multiple Availability Zones and auto-scaling. For scalability, I'd design stateless services and use load balancers.",
+//     },
+//   ],
+//   behavioralQuestions: [
+//     {
+//       question:
+//         "Tell me about a time you owned a service end-to-end and how you handled a production incident.",
+//       intention:
+//         "To assess ownership, incident response, and problem-solving skills.",
+//       answer:
+//         "When I owned the order-orchestration service, we experienced a latency spike. I led the investigation, identified a database lock issue, and implemented a fix. We then conducted a post-mortem to prevent recurrence.",
+//     },
+//     {
+//       question:
+//         "How have you mentored junior engineers? Give an example of how you helped them grow.",
+//       intention:
+//         "To evaluate mentorship, leadership, and team development skills.",
+//       answer:
+//         "I mentored three SDE-1s by conducting design reviews, pairing on code, and providing feedback. One junior engineer struggled with system design, so I guided them through a project, which improved their confidence and skills.",
+//     },
+//     {
+//       question:
+//         "Describe a time you had to make a trade-off between performance and cost. How did you approach it?",
+//       intention:
+//         "To test decision-making, prioritization, and business awareness.",
+//       answer:
+//         "When optimizing the checkout API, we considered using more powerful instances for lower latency but higher cost. We chose a balanced approach by caching and optimizing queries, which reduced latency without significantly increasing costs.",
+//     },
+//   ],
+//   skillGaps: [
+//     { skill: "Kubernetes", severity: "medium" },
+//     { skill: "Terraform", severity: "medium" },
+//     { skill: "AI/LLM integrations", severity: "high" },
+//     { skill: "Multi-cloud or hybrid cloud experience", severity: "low" },
+//   ],
+//   preparationPlan: [],
+// };
