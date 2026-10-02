@@ -38,7 +38,7 @@ async function getInterViewReport(req, res) {
     const report =await interviewReportModel
       .findOne({ user: req.user._id })
       .sort({ createdAt: -1 });
-    if (!report) {
+    if (report.length===0) {
       return res.status(404).json({
         message: "No interview report found for the user.",
       });
@@ -59,7 +59,7 @@ async function getAllInterViewReport(req, res) {
     const reports = await interviewReportModel
       .find({ user: req.user._id })
       .sort({ createdAt: -1 });
-    if (!reports) {
+    if (reports.length===0 ) {
       return res.status(404).json({
         message: "No interview report found for the user.",
       });

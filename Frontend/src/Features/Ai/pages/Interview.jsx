@@ -251,7 +251,7 @@ export default function InterviewPage() {
     roadmap: report.preparationPlan?.length ?? 0,
   };
    if (loading) {
-    <Loading/>
+    return <Loading/>
    }
   return (
     <main className="min-h-screen bg-[#0b0d12] px-4 py-8 text-slate-200">

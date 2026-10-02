@@ -85,7 +85,7 @@ export default function HomePage() {
 
   }
     if (loading) {
-      <Loading/>
+     return <Loading/>
     }
 
   return (
