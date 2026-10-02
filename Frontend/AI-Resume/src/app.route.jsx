@@ -20,7 +20,7 @@ const Router = () => {
             </Protected>
           }
         />
-        <Route path="/interview/:interviewId" element={<InterviewPage/>}/>
+        <Route path="/interview" element={<InterviewPage/>}/>
       </Routes>
     </BrowserRouter>
   );

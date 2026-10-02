@@ -1,10 +1,13 @@
 import Router from "./app.route.jsx";
 import { AuthProvider } from "./Features/Auth/AuthContext.jsx";
+import {AiProvider} from "./Features/Ai/AiContext.jsx"
 
 const App = () => {
   return (
     <AuthProvider>
-      <Router />
+      <AiProvider>
+        <Router />
+      </AiProvider>
     </AuthProvider>
   );
 };

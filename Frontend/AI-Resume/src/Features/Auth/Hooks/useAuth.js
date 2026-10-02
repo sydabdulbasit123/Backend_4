@@ -50,6 +50,7 @@ useEffect(() => {
       const data = await getMe();
       setUser(data.user);
     } catch (error) {
+      console.log(error)
       setUser(null);
     } finally {
       setLoading(false);

@@ -1,11 +1,8 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
+import useAi from "../Hooks/useAi.js";
+import {useNavigate} from "react-router-dom";
 
 const MAX_JD = 5000;
-const MAX_FILE_MB = 5;
-const ALLOWED = [
-  "application/pdf",
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-];
 
 /* ---------- tiny inline icons (no extra dependency) ---------- */
 const Icon = ({ children, className = "h-4 w-4" }) => (
@@ -53,7 +50,12 @@ const InfoIcon = () => (
   </svg>
 );
 const StarIcon = () => (
-  <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor" aria-hidden="true">
+  <svg
+    viewBox="0 0 24 24"
+    className="h-4 w-4"
+    fill="currentColor"
+    aria-hidden="true"
+  >
     <path d="m12 2 2.9 6.9 7.1.6-5.4 4.7 1.7 7.3L12 17.8 5.7 21.5l1.7-7.3L2 9.5l7.1-.6L12 2Z" />
   </svg>
 );
@@ -62,67 +64,39 @@ const StarIcon = () => (
 export default function HomePage() {
   const [jobDescription, setJobDescription] = useState("");
   const [selfDescription, setSelfDescription] = useState("");
-  const [file, setFile] = useState(null);
-  const [dragging, setDragging] = useState(false);
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const inputRef = useRef(null);
+  const [resume, setResume] = useState(null);
 
-  const handleFile = (f) => {
-    if (!f) return;
-    if (!ALLOWED.includes(f.type)) {
-      setError("Upload a PDF file.");
-      return;
-    }
-    if (f.size > MAX_FILE_MB * 1024 * 1024*3) {
-      setError(`File is larger than ${MAX_FILE_MB} MB.`);
-      return;
-    }
-    setError("");
-    setFile(f);
-  };
+  const navigate = useNavigate();
+  const {interviewReportHandler} = useAi();
 
-  const onDrop = (e) => {
-    e.preventDefault();
-    setDragging(false);
-    handleFile(e.dataTransfer.files?.[0]);
-  };
+  async function handleSubmit() {
 
-  const hasProfile = Boolean(file) || selfDescription.trim().length > 0;
-  const canSubmit = jobDescription.trim().length > 0 && hasProfile && !loading;
+  const formData = new FormData();
 
-  const handleSubmit = async () => {
-    if (!jobDescription.trim()) return setError("Paste the job description first.");
-    if (!hasProfile) return setError("Add a resume or a short self-description.");
-    setError("");
-    setLoading(true);
-    try {
-      const body = new FormData();
-      body.append("jobDescription", jobDescription);
-      body.append("selfDescription", selfDescription);
-      if (file) body.append("resume", file);
+  formData.append("Resume", resume);
+  formData.append("jobDescription", jobDescription);
+  formData.append("selfDescription", selfDescription);
 
-      // TODO: replace with your real endpoint
-      // const res = await fetch("/api/interview-plan", { method: "POST", body });
-      // const data = await res.json();
-      await new Promise((r) => setTimeout(r, 1500)); // demo delay
-    } catch {
-      setError("Couldn't generate your plan. Try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+
+
+    const data = await interviewReportHandler(formData);
+    console.log("Interview Report:", data);
+    navigate("/interview")
+
+  }
+
 
   return (
     <main className="min-h-screen bg-[#0b0d12] px-4 py-12 text-slate-200 sm:py-16">
       {/* Heading */}
       <header className="mx-auto max-w-2xl text-center">
         <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-          Create Your Custom <span className="text-[#ff2d6f]">Interview Plan</span>
+          Create Your Custom{" "}
+          <span className="text-[#ff2d6f]">Interview Plan</span>
         </h1>
         <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-slate-500">
-          Let our AI analyze the job requirements and your unique profile to build a
-          winning strategy.
+          Let our AI analyze the job requirements and your unique profile to
+          build a winning strategy.
         </p>
       </header>
 
@@ -172,54 +146,54 @@ export default function HomePage() {
               Your Profile
             </h2>
 
-            <div className="mb-2 flex items-center gap-2 text-xs font-semibold text-slate-300">
-              Upload Resume
-              <span className="rounded bg-[#ff2d6f]/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[#ff4d85]">
-                Best results
-              </span>
-            </div>
+            {/* Resume Upload */}
+            <div className="space-y-2">
+              <label className="flex items-center gap-2 text-sm font-semibold text-white">
+                Upload Resume
+                <span className="rounded bg-pink-500/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-pink-500">
+                  Best Results
+                </span>
+              </label>
 
-            {/* Dropzone */}
-            <button
-              type="button"
-              onClick={() => inputRef.current?.click()}
-              onDragOver={(e) => {
-                e.preventDefault();
-                setDragging(true);
-              }}
-              onDragLeave={() => setDragging(false)}
-              onDrop={onDrop}
-              className={`flex h-32 w-full flex-col items-center justify-center rounded-lg border border-dashed px-4 text-center transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#ff2d6f]/60 ${
-                dragging
-                  ? "border-[#ff2d6f] bg-[#ff2d6f]/10"
-                  : "border-white/10 bg-[#1a1e28] hover:border-white/20"
-              }`}
-            >
-              <span className="text-[#ff2d6f]">
+              <label
+                id="dropzone"
+                htmlFor="resume"
+                data-state="idle"
+                className="flex cursor-pointer flex-col items-center justify-center gap-1.5 rounded-xl
+           border-[1.5px] border-dashed border-slate-700 bg-slate-800/60 px-4 py-7 text-center text-pink-500
+           transition-colors hover:border-pink-500 hover:bg-slate-800
+           data-[state=ok]:border-solid data-[state=ok]:border-green-500
+           data-[state=error]:border-red-500"
+              >
+                <input
+                  type="file"
+                  id="resume"
+                  accept=".pdf"
+                  className="sr-only"
+                  onChange={(e) => setResume(e.target.files[0])}
+                />
+
                 <UploadIcon />
-              </span>
-              {file ? (
-                <span className="mt-2 max-w-full truncate text-sm font-semibold text-white">
-                  {file.name}
-                </span>
-              ) : (
-                <span className="mt-2 text-sm font-semibold text-white">
-                  Click to upload or drag &amp; drop
-                </span>
-              )}
-              <span className="mt-1 text-[11px] text-slate-500">
-                {file
-                  ? `${(file.size / 1024).toFixed(0)} KB · click to replace`
-                  : `PDF or DOCX (Max ${MAX_FILE_MB}MB)`}
-              </span>
-            </button>
-            <input
-              ref={inputRef}
-              type="file"
-              accept=".pdf,.docx"
-              className="hidden"
-              onChange={(e) => handleFile(e.target.files?.[0])}
-            />
+                {resume ? (
+                  <p className="text-sm font-semibold text-green-500">
+                    {resume.name}
+                  </p>
+                ) : (
+                  <div className="flex flex-col items-center gap-1.5">
+                    <strong
+                      id="dz-title"
+                      className="text-sm font-semibold text-white"
+                    >
+                      Click to upload
+                    </strong>
+
+                    <small id="dz-hint" className="text-[11px] text-slate-500">
+                      PDF ONLY (Max 3MB)
+                    </small>
+                  </div>
+                )}
+              </label>
+            </div>
 
             {/* OR divider */}
             <div className="my-4 flex items-center gap-3 text-[11px] font-medium text-slate-500">
@@ -227,8 +201,11 @@ export default function HomePage() {
               OR
               <span className="h-px flex-1 bg-white/10" />
             </div>
-
-            <label htmlFor="self" className="mb-2 text-xs font-semibold text-slate-300">
+            {/*selfDescription*/}
+            <label
+              htmlFor="self"
+              className="mb-2 text-xs font-semibold text-slate-300"
+            >
               Quick Self-Description
             </label>
             <textarea
@@ -245,16 +222,16 @@ export default function HomePage() {
               </span>
               <p>
                 Either a <strong className="text-white">Resume</strong> or a{" "}
-                <strong className="text-white">Self Description</strong> is required to
-                generate a personalized plan.
+                <strong className="text-white">Self Description</strong> is
+                required to generate a personalized plan.
               </p>
             </div>
           </div>
         </div>
 
         {/* Footer bar */}
-        <div className="flex flex-col gap-3 border-t border-white/5 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-[11px] text-slate-500">
+        <div className="flex flex-col gap-3 border-t border-white/5 px-6 py-4 sm:flex-row sm:items-center sm:justify-end">
+          {/* <p className="text-[11px] text-slate-500">
             {error ? (
               <span role="alert" className="text-[#ff6b95]">
                 {error}
@@ -262,24 +239,29 @@ export default function HomePage() {
             ) : (
               "AI-Powered Strategy Generation • Approx 30s"
             )}
-          </p>
+          </p> */}
           <button
             type="button"
             onClick={handleSubmit}
-            disabled={!canSubmit}
             className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#ff2d6f] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-[#ff2d6f]/25 transition hover:bg-[#ff4381] focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 disabled:cursor-not-allowed disabled:opacity-50"
           >
+            <p>Generate Plan</p>
             <StarIcon />
-            {loading ? "Generating..." : "Generate My Interview Report"}
           </button>
         </div>
       </section>
 
       {/* Page footer */}
       <footer className="mt-10 flex justify-center gap-6 text-[11px] text-slate-500">
-        <a href="/privacy" className="hover:text-slate-300">Privacy Policy</a>
-        <a href="/terms" className="hover:text-slate-300">Terms of Service</a>
-        <a href="/help" className="hover:text-slate-300">Help Center</a>
+        <a href="/privacy" className="hover:text-slate-300">
+          Privacy Policy
+        </a>
+        <a href="/terms" className="hover:text-slate-300">
+          Terms of Service
+        </a>
+        <a href="/help" className="hover:text-slate-300">
+          Help Center
+        </a>
       </footer>
     </main>
   );
