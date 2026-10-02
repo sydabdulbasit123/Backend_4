@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import useAi from "../Hooks/useAi";
+import Loading from "../components/Loading"
 
 /* ------------------------------------------------------------------
    Layout (from your wireframe):
@@ -224,17 +225,17 @@ function SkillGaps({ gaps = [] }) {
 
 export default function InterviewPage() {
   const [active, setActive] = useState("technical");
-  const [report, setreport] = useState(null);
+  const [report, setreport] = useState({});
 
-  const { GetReportHandler } = useAi();
+  const { GetReportHandler , loading } = useAi();
 
   useEffect(() => {
     const fetchreport = async () => {
       try {
         const reports = await GetReportHandler();
 
-        if (reports.length > 0) {
-          setreport(reports[0]);
+        if (reports) {
+          setreport(reports);
         }
       } catch (error) {
         console.log(error);
@@ -249,7 +250,9 @@ export default function InterviewPage() {
     behavioral: report.behavioralQuestions?.length ?? 0,
     roadmap: report.preparationPlan?.length ?? 0,
   };
-
+   if (loading) {
+    <Loading/>
+   }
   return (
     <main className="min-h-screen bg-[#0b0d12] px-4 py-8 text-slate-200">
       <div className="mx-auto grid max-w-7xl overflow-hidden rounded-2xl border border-white/5 bg-[#10131a] shadow-2xl shadow-black/40 lg:grid-cols-[240px_1fr_280px]">

@@ -158,20 +158,13 @@ Rules:
 
 const content = response.choices[0].message.content;
 
-console.log("AI RAW RESPONSE:");
-console.log(content);
-
 try {
   const parsed = JSON.parse(content);
 
   const validatedReport = interviewReportSchema.parse(parsed);
 
-  console.log("✅ AI JSON + ZOD VALIDATION SUCCESS");
-
   return validatedReport;
 } catch (error) {
-  console.error("❌ AI RESPONSE ERROR:", error);
-  console.error("RAW AI RESPONSE:", JSON.stringify(content));
 
   throw new Error("AI returned invalid JSON");
 }

@@ -97,7 +97,6 @@ async function loginUserController(req, res) {
             email: user.email
         }
     })
-    console.log("User logged in successfully", { email, password });
 }
 
 

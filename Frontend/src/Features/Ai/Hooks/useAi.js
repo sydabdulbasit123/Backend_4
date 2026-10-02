@@ -18,18 +18,20 @@ const useAi = () => {
       setLoading(false);
     }
   };
+
   const GetReportHandler = async () => {
     setLoading(true);
     try {
       const data = await getinterviewReport();
 
-      return data.reports;
+      return data.report;
     } catch (error) {
       console.log(error);
     } finally {
       setLoading(false);
     }
   };
+  
   return { report, loading, interviewReportHandler, GetReportHandler };
 };
 

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import useAi from "../Hooks/useAi.js";
 import {useNavigate} from "react-router-dom";
+import Loading from "../components/Loading.jsx"
 
 const MAX_JD = 5000;
 
@@ -67,7 +68,7 @@ export default function HomePage() {
   const [resume, setResume] = useState(null);
 
   const navigate = useNavigate();
-  const {interviewReportHandler} = useAi();
+  const {interviewReportHandler , loading} = useAi();
 
   async function handleSubmit() {
 
@@ -79,12 +80,13 @@ export default function HomePage() {
 
 
 
-    const data = await interviewReportHandler(formData);
-    console.log("Interview Report:", data);
+    await interviewReportHandler(formData);
     navigate("/interview")
 
   }
-
+    if (loading) {
+      <Loading/>
+    }
 
   return (
     <main className="min-h-screen bg-[#0b0d12] px-4 py-12 text-slate-200 sm:py-16">
