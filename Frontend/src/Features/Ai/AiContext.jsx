@@ -5,7 +5,7 @@ const AiContext = createContext();
 
 const AiProvider = ({ children }) => {
   const [report, setReport] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
 
   return (

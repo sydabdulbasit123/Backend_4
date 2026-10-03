@@ -250,6 +250,8 @@ export default function InterviewPage() {
     behavioral: report.behavioralQuestions?.length ?? 0,
     roadmap: report.preparationPlan?.length ?? 0,
   };
+
+  // Show loading indicator while fetching the report
    if (loading) {
     return <Loading/>
    }

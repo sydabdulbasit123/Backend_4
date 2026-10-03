@@ -71,22 +71,23 @@ export default function HomePage() {
   const {interviewReportHandler , loading} = useAi();
 
   async function handleSubmit() {
-
   const formData = new FormData();
 
   formData.append("Resume", resume);
   formData.append("jobDescription", jobDescription);
   formData.append("selfDescription", selfDescription);
+  
 
 
-
-    await interviewReportHandler(formData);
-    navigate("/interview")
+    const data =await interviewReportHandler(formData);
+    if(data){
+      navigate("/interview")
+    }
 
   }
-    if (loading) {
-     return <Loading/>
-    }
+if (loading) {
+    return <Loading />;
+  }
 
   return (
     <main className="min-h-screen bg-[#0b0d12] px-4 py-12 text-slate-200 sm:py-16">
