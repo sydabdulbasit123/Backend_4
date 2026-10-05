@@ -82,7 +82,7 @@ const interviewReportSchema = new mongoose.Schema(
     resume: {
       type: String,
     },
-    selfDescrpition: {
+    selfDescription: {
       type: String,
     },
     matchScore: {

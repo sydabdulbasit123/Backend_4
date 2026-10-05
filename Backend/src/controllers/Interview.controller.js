@@ -22,7 +22,7 @@ async function interViewContentGenerateByAI(req, res) {
   const interviewReport = await interviewReportModel.create({
     user: req.user._id,
     resume: resumecontent.text,
-    selfDescrpition: selfDescription,
+    selfDescription: selfDescription,
     jobDescription: jobDescription,
     ...GenerateReport,
   });

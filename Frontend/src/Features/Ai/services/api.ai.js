@@ -17,10 +17,20 @@ export async function interviewReport(formdata) {
 }
 export async function getinterviewReport(){
   try {
-    const response = await api.get("/api/interview/interview")
+    const response = await api.post("/api/interview/interview")
     return response.data
   } catch (err) {
      console.log("ERROR:", err);
+    throw err
+  }
+}
+export async function GenerateResume(){
+  try{
+    const response = await api.get("/api/resume/generate")
+    return response.data
+  }
+  catch(err){
+    console.log("ERROR:", err);
     throw err
   }
 }

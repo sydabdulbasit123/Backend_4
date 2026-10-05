@@ -1,5 +1,5 @@
 import { AiContext } from "../AiContext";
-import { getinterviewReport, interviewReport } from "../services/api.ai";
+import { getinterviewReport, interviewReport , GenerateResume } from "../services/api.ai";
 import { useContext } from "react";
 
 const useAi = () => {
@@ -31,8 +31,19 @@ const useAi = () => {
       setLoading(false);
     }
   };
-  
-  return { report, loading, interviewReportHandler, GetReportHandler };
+  const GenerateResumeHandler = async () => {
+    setLoading(true);
+    try {
+      const data = await GenerateResume()
+
+      return data.resume
+    } catch (error) {
+      console.log(error)
+    }finally{
+      setLoading(false)
+    }
+  }
+  return { report, loading, interviewReportHandler, GetReportHandler , GenerateResumeHandler };
 };
 
-export default useAi;
+export default useAi
