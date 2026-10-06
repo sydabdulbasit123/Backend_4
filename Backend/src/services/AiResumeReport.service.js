@@ -136,7 +136,7 @@ Rules:
 `;
 
   const response = await openai.chat.completions.create({
-    model: "openrouter/free",
+    model: "nvidia/nemotron-3-ultra-550b-a55b:free",
 
     messages: [
       {
@@ -158,6 +158,8 @@ Rules:
 
 const content = response.choices[0].message.content;
 
+console.log("AI RAW CONTENT:", content);
+
 try {
   const parsed = JSON.parse(content);
 
@@ -165,6 +167,8 @@ try {
 
   return validatedReport;
 } catch (error) {
+  console.error("JSON PARSE / VALIDATION ERROR:", error);
+  console.error("AI RAW CONTENT:", content);
 
   throw new Error("AI returned invalid JSON");
 }

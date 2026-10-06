@@ -4,6 +4,7 @@ import Login from "./Features/Auth/pages/Login.jsx";
 import Home from "./Features/Ai/pages/Home.jsx";
 import Protected from "./Features/Auth/components/Protected.jsx";
 import InterviewPage from "./Features/Ai/pages/Interview.jsx";
+import ResumePdf from "./Features/Ai/components/ResumePdf.jsx";
 
 const Router = () => {
   return (
@@ -28,6 +29,7 @@ const Router = () => {
             </Protected>
           }
         />
+        <Route path="/resume-pdf" element={<ResumePdf/>}/>
       </Routes>
     </BrowserRouter>
   );

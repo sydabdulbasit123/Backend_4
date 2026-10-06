@@ -1,0 +1,130 @@
+.resume-page {
+  min-height: 100vh;
+  padding: 40px 20px;
+  background: #0b0d12;
+  color: #e2e8f0;
+}
+
+.download-btn {
+  display: block;
+  margin: 0 auto 25px;
+  padding: 12px 22px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  background: #ff2d6f;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 150ms ease, box-shadow 150ms ease;
+}
+
+.download-btn:hover {
+  background: #ff4381;
+  box-shadow: 0 8px 24px rgba(255, 45, 111, 0.25);
+}
+
+.download-btn:focus-visible {
+  outline: 2px solid #ff8eae;
+  outline-offset: 3px;
+}
+
+.resume-container {
+  box-sizing: border-box;
+  width: 210mm;
+  max-width: 100%;
+  min-height: 297mm;
+  margin: 0 auto;
+  padding: 18mm;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  background: #fff;
+  color: #1f2937;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
+  overflow-wrap: anywhere;
+}
+
+.resume-container header {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.resume-container header h1 {
+  margin: 0;
+  color: #111827;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.resume-container header p {
+  margin: 5px 0 0;
+  color: #4b5563;
+  font-size: 14px;
+}
+
+.resume-container section {
+  margin-top: 18px;
+  break-inside: avoid;
+}
+
+.resume-container section h2 {
+  margin: 0 0 8px;
+  padding-bottom: 4px;
+  border-bottom: 2px solid #ff2d6f;
+  color: #be185d;
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.resume-container h1,
+.resume-container h2,
+.resume-container h3 {
+  break-after: avoid;
+}
+
+.resume-container p {
+  margin: 5px 0;
+}
+
+.resume-container ul {
+  margin: 5px 0;
+  padding-left: 20px;
+}
+
+.resume-container li {
+  margin-bottom: 4px;
+}
+
+.resume-container li::marker {
+  color: #ff2d6f;
+}
+
+.resume-container li ul {
+  margin-top: 4px;
+}
+
+.resume-container a {
+  color: #be185d;
+  text-decoration-color: rgba(190, 24, 93, 0.4);
+  text-underline-offset: 2px;
+}
+
+.resume-container a:hover {
+  color: #9d174d;
+}
+
+@media (max-width: 640px) {
+  .resume-page {
+    padding: 24px 12px;
+  }
+
+  .resume-container {
+    min-height: auto;
+    padding: 24px 20px;
+    border-radius: 10px;
+  }
+}

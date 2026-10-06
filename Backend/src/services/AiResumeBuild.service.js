@@ -65,7 +65,7 @@ Return ONLY HTML in exactly this form:
 `;
 
   const response = await openai.chat.completions.create({
-    model: "openrouter/free",
+    model: "inclusionai/ling-3.0-flash-sante:free",
 
     messages: [
       {
@@ -77,7 +77,20 @@ Return ONLY HTML in exactly this form:
     max_tokens: 8000,
   });
 
-  let content = response.choices[0].message.content;
+console.log("========== ATS DEBUG ==========");
+
+console.log("Resume:", Resume);
+console.log("Self Description:", selfDescription);
+console.log("Job Description:", jobDescription);
+
+console.log(
+  "AI RESPONSE:",
+  JSON.stringify(response, null, 2)
+);
+
+let content = response.choices?.[0]?.message?.content;
+
+console.log("AI CONTENT:", content);
 
   if (!content) {
     throw new Error("AI did not return resume HTML");
@@ -88,6 +101,8 @@ Return ONLY HTML in exactly this form:
     .replace(/^```\s*/i, "")
     .replace(/\s*```$/i, "")
     .trim();
+
+    console.log(content);
 
   return content;
 }

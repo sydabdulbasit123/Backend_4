@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import {useNavigate} from "react-router-dom"
 import useAi from "../Hooks/useAi";
 import Loading from "../components/Loading";
 
@@ -227,17 +228,16 @@ export default function InterviewPage() {
   const [active, setActive] = useState("technical");
   const [report, setreport] = useState({});
 
-  const { GetReportHandler, loading , GenerateResumeHandler } = useAi();
+  const navigate = useNavigate()
 
+  const { GetReportHandler, loading, GenerateResumeHandler} = useAi();
 
   const Resumehandler = async () => {
-    console.log("Resume generation initiated");
-      const resume = await GenerateResumeHandler();
-
-  if (resume) {
-    console.log("GENERATED RESUME:", resume);
-  }
-  }
+    const generatedResume = await GenerateResumeHandler();
+    if (generatedResume) {
+      navigate("/resume-pdf")
+    }
+  };
 
   useEffect(() => {
     const fetchreport = async () => {
@@ -297,10 +297,11 @@ export default function InterviewPage() {
           <p className="hidden px-3 pb-2 text-xs font-semibold text-slate-500 lg:block border-t border-white/5 pt-4 mt-4">
             Click To Generate ATS Resume
           </p>
-          <button 
-          onClick={Resumehandler}
-          disabled={loading}
-          className="flex shrink-0 items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#ff2d6f]/60 bg-[#ff2d6f]/15 text-[#ff4d85] active:scale-95 hover:bg-[#ff2d6f]/20 ">
+          <button
+            onClick={Resumehandler}
+            disabled={loading}
+            className="flex shrink-0 items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#ff2d6f]/60 bg-[#ff2d6f]/15 text-[#ff4d85] active:scale-95 hover:bg-[#ff2d6f]/20 "
+          >
             {loading ? "Generating..." : "✨ Generate ATS Resume"}
           </button>
         </nav>
