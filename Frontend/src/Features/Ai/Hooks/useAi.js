@@ -1,5 +1,5 @@
 import { AiContext } from "../AiContext";
-import { getinterviewReport, interviewReport , GenerateResume } from "../services/api.ai";
+import { getinterviewReport, interviewReport, GenerateResume, getallinterviewReport} from "../services/api.ai";
 import { useContext } from "react";
 import {toast} from "react-hot-toast"
 
@@ -35,6 +35,19 @@ const useAi = () => {
       setLoading(false);
     }
   };
+  const GetAllReportHandler = async () => {
+    setLoading(true);
+    try {
+      const data = await getallinterviewReport();
+
+      return data.reports;
+    } catch (error) {
+      toast.error("sorry, something went wrong");
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const GenerateResumeHandler = async () => {
     setLoading(true);
@@ -50,7 +63,7 @@ const useAi = () => {
       setLoading(false)
     }
   }
-  return { report, loading, resumehtml ,interviewReportHandler, GetReportHandler , GenerateResumeHandler };
+  return { report, loading, resumehtml ,interviewReportHandler, GetReportHandler , GenerateResumeHandler, GetAllReportHandler };
 };
 
 export default useAi

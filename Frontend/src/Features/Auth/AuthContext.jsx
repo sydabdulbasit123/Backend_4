@@ -7,19 +7,18 @@ const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const getAndSetUser = async () => {
+    try {
+      const data = await getMe();
+      setUser(data.user);
+    } catch (error) {
+      console.log("NO USER:", error);
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
-    const getAndSetUser = async () => {
-      try {
-        const data = await getMe();
-        setUser(data.user);
-      } catch (error) {
-        console.log("NO USER:", error);
-        setUser(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     getAndSetUser();
   }, []);
 
@@ -30,6 +29,7 @@ const AuthProvider = ({ children }) => {
         setUser,
         loading,
         setLoading,
+        getAndSetUser,
       }}
     >
       {children}

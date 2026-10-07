@@ -1,12 +1,12 @@
 import axios from "axios";
 
-const api = axios.create({
-  baseURL: "http://localhost:4000",
-  withCredentials: true,
-})
+// const api = axios.create({
+//   baseURL: "http://localhost:4000",
+//   withCredentials: true,
+// })
 export async function interviewReport(formdata) {
   try {
-    const response = await api.post("/api/interview/", formdata
+    const response = await axios.post("/api/interview/", formdata
   );
 
     return response.data;
@@ -17,7 +17,16 @@ export async function interviewReport(formdata) {
 }
 export async function getinterviewReport(){
   try {
-    const response = await api.get("/api/interview/interview")
+    const response = await axios.get("/api/interview/interview")
+    return response.data
+  } catch (err) {
+     console.log("ERROR:", err);
+    throw err
+  }
+}
+export async function getallinterviewReport(){
+  try {
+    const response = await axios.get("/api/interview/allreports")
     return response.data
   } catch (err) {
      console.log("ERROR:", err);
@@ -26,7 +35,7 @@ export async function getinterviewReport(){
 }
 export async function GenerateResume(){
   try{
-    const response = await api.post("/api/resume/generate")
+    const response = await axios.post("/api/resume/generate")
     return response.data
   }
   catch(err){
