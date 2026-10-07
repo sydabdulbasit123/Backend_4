@@ -42,7 +42,7 @@ const useAi = () => {
 
       return data.reports;
     } catch (error) {
-      toast.error("sorry, something went wrong");
+      toast.error("no reports found");
       console.log(error);
     } finally {
       setLoading(false);

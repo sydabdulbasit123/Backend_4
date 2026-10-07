@@ -168,7 +168,6 @@ try {
   return validatedReport;
 } catch (error) {
   console.error("JSON PARSE / VALIDATION ERROR:", error);
-  console.error("AI RAW CONTENT:", content);
 
   throw new Error("AI returned invalid JSON");
 }

@@ -20,7 +20,7 @@ async function interViewContentGenerateByAI(req, res) {
   });
 
   const interviewReport = await interviewReportModel.create({
-    user: req.user._id,
+    user: req.user.id,
     resume: resumecontent.text,
     selfDescription: selfDescription,
     jobDescription: jobDescription,
@@ -36,7 +36,7 @@ async function interViewContentGenerateByAI(req, res) {
 async function getInterViewReport(req, res) {
   try {
     const report =await interviewReportModel
-      .findOne({ user: req.user._id })
+      .findOne({ user: req.user.id })
       .sort({ createdAt: -1 });
     if (report.length===0) {
       return res.status(404).json({
@@ -56,21 +56,26 @@ async function getInterViewReport(req, res) {
 
 async function getAllInterViewReport(req, res) {
   try {
+
     const reports = await interviewReportModel
-      .find({ user: req.user._id })
+      .find({ user: req.user.id })
       .sort({ createdAt: -1 });
-    if (reports.length===0 ) {
+
+    if (reports.length === 0) {
       return res.status(404).json({
-        message: "No interview report found for the user.",
+        message: "No interview reports found for this user.",
       });
     }
-    res.status(200).json({
+
+    return res.status(200).json({
       message: "Interview reports found.",
       reports,
     });
   } catch (error) {
-    res.status(500).json({
-      message: "failed to fetch interview report",
+    console.error("GET ALL REPORTS ERROR:", error);
+
+    return res.status(500).json({
+      message: "Failed to fetch interview reports.",
     });
   }
 }
