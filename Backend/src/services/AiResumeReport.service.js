@@ -3,8 +3,9 @@ const { z } = require("zod");
 const { zodToJsonSchema } = require("zod-to-json-schema");
 
 const openai = new OpenAI({
-  baseURL: "https://openrouter.ai/api/v1",
-  apiKey: process.env.OPENROUTER_API_KEY,
+  apiKey:
+    "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",
+  baseURL: "https://integrate.api.nvidia.com/v1",
 });
 
 const interviewReportSchema = z.object({
@@ -12,7 +13,9 @@ const interviewReportSchema = z.object({
     .number()
     .describe(
       "A score between 0 and 100 indicating how well the candidate's profile matches the job describe",
-    ).min(0).max(100),
+    )
+    .min(0)
+    .max(100),
   technicalQuestions: z
     .array(
       z.object({
@@ -28,7 +31,8 @@ const interviewReportSchema = z.object({
             "How to answer this question, what points to cover, what approach to take etc.",
           ),
       }),
-    ).min(3)
+    )
+    .min(3)
     .describe(
       "Technical questions that can be asked in the interview along with their intention and how to answer them",
     ),
@@ -47,7 +51,8 @@ const interviewReportSchema = z.object({
             "How to answer this question, what points to cover, what approach to take etc.",
           ),
       }),
-    ).min(3)
+    )
+    .min(3)
     .describe(
       "Behavioral questions that can be asked in the interview along with their intention and how to answer them",
     ),
@@ -61,7 +66,8 @@ const interviewReportSchema = z.object({
             "The severity of this skill gap, i.e. how important is this skill for the job and how much it can impact the candidate's chances",
           ),
       }),
-    ).min(4)
+    )
+    .min(4)
     .describe(
       "List of skill gaps in the candidate's profile along with their severity",
     ),
@@ -77,12 +83,14 @@ const interviewReportSchema = z.object({
             "The main focus of this day in the preparation plan, e.g. data structures, system design, mock interviews etc.",
           ),
         tasks: z
-          .array(z.string()).min(2)
+          .array(z.string())
+          .min(2)
           .describe(
             "List of tasks to be done on this day to follow the preparation plan, e.g. read a specific book or article, solve a set of problems, watch a video etc.",
           ),
       }),
-    ).min(5)
+    )
+    .min(5)
     .describe(
       "A day-wise preparation plan for the candidate to follow in order to prepare for the interview effectively",
     ),
@@ -136,7 +144,7 @@ Rules:
 `;
 
   const response = await openai.chat.completions.create({
-    model: "nvidia/nemotron-3-ultra-550b-a55b:free",
+    model: "nvidia/nemotron-3.5-lightning-30b-a3b",
 
     messages: [
       {
@@ -156,21 +164,21 @@ Rules:
     max_tokens: 8000,
   });
 
-const content = response.choices[0].message.content;
+  const content = response.choices[0].message.content;
 
-console.log("AI RAW CONTENT:", content);
+  console.log("AI RAW CONTENT:", content);
 
-try {
-  const parsed = JSON.parse(content);
+  try {
+    const parsed = JSON.parse(content);
 
-  const validatedReport = interviewReportSchema.parse(parsed);
+    const validatedReport = interviewReportSchema.parse(parsed);
 
-  return validatedReport;
-} catch (error) {
-  console.error("JSON PARSE / VALIDATION ERROR:", error);
+    return validatedReport;
+  } catch (error) {
+    console.error("JSON PARSE / VALIDATION ERROR:", error);
 
-  throw new Error("AI returned invalid JSON");
-}
+    throw new Error("AI returned invalid JSON");
+  }
 }
 
 module.exports = { InterViewReportByAi };

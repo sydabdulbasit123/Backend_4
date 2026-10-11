@@ -4,7 +4,7 @@ const { AtsResumeByAi } = require("../services/AiResumeBuild.service");
 async function generateResumeByAI(req, res) {
   try {
     const data = await interviewReportModel
-      .findOne({ user: req.user._id })
+      .findOne({ user: req.user.id })
       .sort({ createdAt: -1 });
 
     if (!data) {

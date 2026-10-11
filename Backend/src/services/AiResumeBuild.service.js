@@ -1,8 +1,8 @@
 const OpenAI = require("openai");
 
 const openai = new OpenAI({
-  baseURL: "https://openrouter.ai/api/v1",
-  apiKey: process.env.OPENROUTER_API_KEY,
+  apiKey:"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",
+  baseURL: "https://integrate.api.nvidia.com/v1",
 });
 
 async function AtsResumeByAi({ Resume, selfDescription, jobDescription }) {
@@ -65,7 +65,7 @@ Return ONLY HTML in exactly this form:
 `;
 
   const response = await openai.chat.completions.create({
-    model: "inclusionai/ling-3.0-flash-sante:free",
+    model: "nvidia/nemotron-3.5-lightning-30b-a3b",
 
     messages: [
       {
@@ -77,20 +77,7 @@ Return ONLY HTML in exactly this form:
     max_tokens: 8000,
   });
 
-console.log("========== ATS DEBUG ==========");
-
-console.log("Resume:", Resume);
-console.log("Self Description:", selfDescription);
-console.log("Job Description:", jobDescription);
-
-console.log(
-  "AI RESPONSE:",
-  JSON.stringify(response, null, 2)
-);
-
-let content = response.choices?.[0]?.message?.content;
-
-console.log("AI CONTENT:", content);
+  let content = response.choices?.[0]?.message?.content;
 
   if (!content) {
     throw new Error("AI did not return resume HTML");
@@ -102,7 +89,7 @@ console.log("AI CONTENT:", content);
     .replace(/\s*```$/i, "")
     .trim();
 
-    console.log(content);
+  console.log(content);
 
   return content;
 }
