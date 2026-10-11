@@ -1,7 +1,7 @@
 const OpenAI = require("openai");
 
 const openai = new OpenAI({
-  apiKey:"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",
+  apiKey:"process.env.NVIDIA_API_KEY",
   baseURL: "https://integrate.api.nvidia.com/v1",
 });
 

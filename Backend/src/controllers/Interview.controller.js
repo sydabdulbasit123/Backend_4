@@ -35,10 +35,10 @@ async function interViewContentGenerateByAI(req, res) {
 
 async function getInterViewReport(req, res) {
   try {
-    const report =await interviewReportModel
+    const report = await interviewReportModel
       .findOne({ user: req.user.id })
       .sort({ createdAt: -1 });
-    if (report.length===0) {
+    if (report.length === 0) {
       return res.status(404).json({
         message: "No interview report found for the user.",
       });
@@ -53,10 +53,13 @@ async function getInterViewReport(req, res) {
     });
   }
 }
+
 async function getInterViewReportById(req, res) {
   try {
-    const report =await interviewReportModel
-      .findOne({_id:req.params.id})
+    const report = await interviewReportModel.findOne({
+      _id: req.params.id,
+      user: req.user.id,
+    });
     if (!report) {
       return res.status(404).json({
         message: "No interview report found for the user.",
@@ -75,7 +78,6 @@ async function getInterViewReportById(req, res) {
 
 async function getAllInterViewReport(req, res) {
   try {
-
     const reports = await interviewReportModel
       .find({ user: req.user.id })
       .sort({ createdAt: -1 });
@@ -99,4 +101,9 @@ async function getAllInterViewReport(req, res) {
   }
 }
 
-module.exports = { interViewContentGenerateByAI, getInterViewReport , getAllInterViewReport , getInterViewReportById };
+module.exports = {
+  interViewContentGenerateByAI,
+  getInterViewReport,
+  getAllInterViewReport,
+  getInterViewReportById,
+};
