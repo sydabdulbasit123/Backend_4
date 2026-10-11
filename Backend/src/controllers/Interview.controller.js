@@ -53,6 +53,25 @@ async function getInterViewReport(req, res) {
     });
   }
 }
+async function getInterViewReportById(req, res) {
+  try {
+    const report =await interviewReportModel
+      .findOne({_id:req.params.id})
+    if (!report) {
+      return res.status(404).json({
+        message: "No interview report found for the user.",
+      });
+    }
+    res.status(200).json({
+      message: "Interview report found.",
+      report,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "failed to fetch interview report",
+    });
+  }
+}
 
 async function getAllInterViewReport(req, res) {
   try {
@@ -80,4 +99,4 @@ async function getAllInterViewReport(req, res) {
   }
 }
 
-module.exports = { interViewContentGenerateByAI, getInterViewReport , getAllInterViewReport };
+module.exports = { interViewContentGenerateByAI, getInterViewReport , getAllInterViewReport , getInterViewReportById };

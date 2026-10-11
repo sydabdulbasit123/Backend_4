@@ -1,11 +1,18 @@
 import { AiContext } from "../AiContext";
-import { getinterviewReport, interviewReport, GenerateResume, getallinterviewReport} from "../services/api.ai";
+import {
+  getinterviewReport,
+  interviewReport,
+  GenerateResume,
+  getallinterviewReport,
+  getinterviewReportById,
+} from "../services/api.ai";
 import { useContext } from "react";
-import {toast} from "react-hot-toast"
+import { toast } from "react-hot-toast";
 
 const useAi = () => {
   const context = useContext(AiContext);
-  const { report, setReport, loading, setLoading , resumehtml  , setResumehtml } = context;
+  const { report, setReport, loading, setLoading, resumehtml, setResumehtml } =
+    context;
 
   const interviewReportHandler = async (formdata) => {
     setLoading(true);
@@ -35,6 +42,21 @@ const useAi = () => {
       setLoading(false);
     }
   };
+
+  const GetReportByIdHandler = async (id) => {
+    setLoading(true);
+    console.log("id in get report by id handler", id);
+    try {
+      const data = await getinterviewReportById(id);
+      return data.report;
+    } catch (error) {
+      toast.error("sorry, something went wrong");
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const GetAllReportHandler = async () => {
     setLoading(true);
     try {
@@ -52,18 +74,28 @@ const useAi = () => {
   const GenerateResumeHandler = async () => {
     setLoading(true);
     try {
-      const data = await GenerateResume()
-      setResumehtml(data.resume)
+      const data = await GenerateResume();
+      setResumehtml(data.resume);
       toast.success("Resume generated");
-      return data.resume
+      return data.resume;
     } catch (error) {
       toast.error("sorry, something went wrong");
-      console.log(error)
-    }finally{
-      setLoading(false)
+      console.log(error);
+    } finally {
+      setLoading(false);
     }
-  }
-  return { report, loading, resumehtml ,interviewReportHandler, GetReportHandler , GenerateResumeHandler, GetAllReportHandler };
+  };
+
+  return {
+    report,
+    loading,
+    resumehtml,
+    interviewReportHandler,
+    GetReportHandler,
+    GenerateResumeHandler,
+    GetAllReportHandler,
+    GetReportByIdHandler,
+  };
 };
 
-export default useAi
+export default useAi;

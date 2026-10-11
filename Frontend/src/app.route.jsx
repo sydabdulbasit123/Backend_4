@@ -4,6 +4,7 @@ import Login from "./Features/Auth/pages/Login.jsx";
 import Report from "./Features/Ai/pages/Report.jsx";
 import Protected from "./Features/Auth/components/Protected.jsx";
 import InterviewPage from "./Features/Ai/pages/Interview.jsx";
+import InterviewById from "./Features/Ai/pages/InterviewById.jsx";
 import ResumePdf from "./Features/Ai/components/ResumePdf.jsx";
 import Home from "./Features/Ai/pages/Home.jsx";
 import NotFound from "./Features/Auth/pages/NotFound.jsx";
@@ -23,12 +24,12 @@ const Router = () => {
               <Report />
             </Protected>
           }
-          />
+        />
         <Route
           path="/reports"
           element={
             <Protected>
-              <Reports/>
+              <Reports />
             </Protected>
           }
         />
@@ -37,6 +38,14 @@ const Router = () => {
           element={
             <Protected>
               <InterviewPage />
+            </Protected>
+          }
+        />
+        <Route
+          path="/interview/:id"
+          element={
+            <Protected>
+              <InterviewById />
             </Protected>
           }
         />

@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import useAi from "../Hooks/useAi"
-
+import useAi from "../Hooks/useAi";
+import InterviewById from "./InterviewById";
 
 /* ---- Apne project ke hisaab se in cheezon ko badlo ---- */
 // const REPORTS_URL = "/api/interview"; // user ki saari reports dene wala GET route
-const REPORT_DETAIL_PATH = (id) => `/report/${id}`; // ek report ka frontend route
+const REPORT_DETAIL_PATH = (id) => `/interview/${id}`; // ek report ka frontend route
 const NEW_REPORT_PATH = "/create-report"; // nayi report banane wala page
 const LOGIN_PATH = "/login";
 /* ------------------------------------------------------- */
@@ -34,36 +34,41 @@ export default function Reports() {
   const [error, setError] = useState("");
   const [reloadKey, setReloadKey] = useState(0);
 
-  const {GetAllReportHandler} = useAi()
+  const { GetAllReportHandler} = useAi();
 
-useEffect(() => {
-  let ignore = false;
+  useEffect(() => {
+    let ignore = false;
 
-  GetAllReportHandler()
-    .then((data) => {
-      if (ignore) return;
-      // Backend {reports: [...]} bheje ya seedha [...], dono chalega
-      const list = Array.isArray(data) ? data : (data?.reports ?? []);
-      setReports(list);
-      setError("");
-    })
-    .catch((err) => {
-      if (ignore) return;
-      // axios ka error aise aata hai: err.response.status
-      if (err?.response?.status === 401) {
-        navigate(LOGIN_PATH, { replace: true });
-        return;
-      }
-      setError(err?.response?.data?.message || err.message || "Something went wrong.");
-    })
-    .finally(() => {
-      if (!ignore) setLoading(false);
-    });
+    GetAllReportHandler()
+      .then((data) => {
+        if (ignore) return;
+        // Backend {reports: [...]} bheje ya seedha [...], dono chalega
+        const list = Array.isArray(data) ? data : (data?.reports ?? []);
+        setReports(list);
+        setError("");
+      })
+      .catch((err) => {
+        if (ignore) return;
+        // axios ka error aise aata hai: err.response.status
+        if (err?.response?.status === 401) {
+          navigate(LOGIN_PATH, { replace: true });
+          return;
+        }
+        setError(
+          err?.response?.data?.message ||
+            err.message ||
+            "Something went wrong.",
+        );
+      })
+      .finally(() => {
+        if (!ignore) setLoading(false);
+      });
 
-  return () => {
-    ignore = true;
-  };
-}, [navigate, reloadKey]);
+    return () => {
+      ignore = true;
+    };
+  }, [navigate, reloadKey]);
+
 
   const retry = () => {
     setLoading(true);
@@ -157,6 +162,9 @@ useEffect(() => {
               return (
                 <li key={id}>
                   <Link
+                  onClick={() => {
+                    < InterviewById id={id} />
+                  }}
                     to={REPORT_DETAIL_PATH(id)}
                     className="flex h-full flex-col justify-between rounded-2xl border border-white/5 bg-[#10131a] p-6 transition hover:border-[#ff2d6f]/30 hover:bg-[#141821] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#ff2d6f]/60"
                   >

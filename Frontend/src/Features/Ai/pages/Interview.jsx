@@ -224,9 +224,15 @@ function SkillGaps({ gaps = [] }) {
 
 /* ---------- page ---------- */
 
-export default function InterviewPage() {
+export default function InterviewPage({reportdata}) {
   const [active, setActive] = useState("technical");
-  const [report, setreport] = useState({});
+  const [report, setReport] = useState(reportdata || {
+  matchScore: 0,
+  technicalQuestions: [],
+  behavioralQuestions: [],
+  skillGaps: [],
+  preparationPlan: [],
+});
 
   const navigate = useNavigate()
 
@@ -239,21 +245,36 @@ export default function InterviewPage() {
     }
   };
 
-  useEffect(() => {
-    const fetchreport = async () => {
-      try {
-        const reports = await GetReportHandler();
+useEffect(() => {
+  if (reportdata) {
+    setReport(reportdata.report ?? reportdata);
+    return;
+  }
 
-        if (reports) {
-          setreport(reports);
-        }
-      } catch (error) {
-        console.log(error);
+  let cancelled = false;
+
+  async function fetchReport() {
+    try {
+      const response = await GetReportHandler();
+      const actualReport = response?.report ?? response;
+
+      if (!cancelled && actualReport) {
+        setReport(actualReport);
       }
-    };
+    } catch (error) {
+      console.error("Failed to fetch interview report:", error);
+    }
+  }
 
-    fetchreport();
-  }, []);
+  fetchReport();
+
+  return () => {
+    cancelled = true;
+  };
+}, [reportdata]);
+
+  // use `report` everywhere below instead of `data`
+
 
   const counts = {
     technical: report.technicalQuestions?.length ?? 0,
