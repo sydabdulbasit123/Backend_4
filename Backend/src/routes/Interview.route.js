@@ -1,5 +1,5 @@
 const { Router } = require("express");
-const upload = require("../middlewares/InterView.middleware");
+const upload = require("../middlewares/Interview.middleware");
 const authMiddleware = require("../middlewares/auth.middleware");
 const {
   interViewContentGenerateByAI,
