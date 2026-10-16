@@ -9,7 +9,7 @@ export default defineConfig({
     allowedHosts: [".trycloudflare.com"],
     proxy: {
       "/api": {
-        target: "https://backend-4-vgjo.onrender.com",
+        target: "http://localhost:4000",
         changeOrigin: true,
       },
     },
