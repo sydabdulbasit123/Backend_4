@@ -1,182 +1,94 @@
-const OpenAI = require("openai");
 const { z } = require("zod");
-const { zodToJsonSchema } = require("zod-to-json-schema");
+const { ChatPromptTemplate } = require("@langchain/core/prompts");
+const { getModel } = require("./gemini");
 
-const openai = new OpenAI({
-  apiKey: process.env.NVIDIA_API_KEY,
-  baseURL: "https://integrate.api.nvidia.com/v1",
+const qaItem = z.object({
+  question: z.string().describe("The question that can be asked in the interview"),
+  intention: z.string().describe("The intention of the interviewer behind asking this question"),
+  answer: z
+    .string()
+    .describe("How to answer this question, what points to cover, what approach to take"),
 });
 
 const interviewReportSchema = z.object({
   matchScore: z
     .number()
-    .describe(
-      "A score between 0 and 100 indicating how well the candidate's profile matches the job describe",
-    )
     .min(0)
-    .max(100),
+    .max(100)
+    .describe("Score 0-100 for how well the candidate's profile matches the job"),
   technicalQuestions: z
-    .array(
-      z.object({
-        question: z
-          .string()
-          .describe("The technical question can be asked in the interview"),
-        intention: z
-          .string()
-          .describe("The intention of interviewer behind asking this question"),
-        answer: z
-          .string()
-          .describe(
-            "How to answer this question, what points to cover, what approach to take etc.",
-          ),
-      }),
-    )
+    .array(qaItem)
     .min(3)
-    .describe(
-      "Technical questions that can be asked in the interview along with their intention and how to answer them",
-    ),
+    .describe("Technical questions with intention and how to answer"),
   behavioralQuestions: z
-    .array(
-      z.object({
-        question: z
-          .string()
-          .describe("The technical question can be asked in the interview"),
-        intention: z
-          .string()
-          .describe("The intention of interviewer behind asking this question"),
-        answer: z
-          .string()
-          .describe(
-            "How to answer this question, what points to cover, what approach to take etc.",
-          ),
-      }),
-    )
+    .array(qaItem)
     .min(3)
-    .describe(
-      "Behavioral questions that can be asked in the interview along with their intention and how to answer them",
-    ),
+    .describe("Behavioral questions with intention and how to answer"),
   skillGaps: z
     .array(
       z.object({
-        skill: z.string().describe("The skill which the candidate is lacking"),
+        skill: z.string().describe("The skill the candidate is lacking"),
         severity: z
           .enum(["low", "medium", "high"])
-          .describe(
-            "The severity of this skill gap, i.e. how important is this skill for the job and how much it can impact the candidate's chances",
-          ),
+          .describe("How important this skill is for the job and its impact on chances"),
       }),
     )
     .min(4)
-    .describe(
-      "List of skill gaps in the candidate's profile along with their severity",
-    ),
+    .describe("Skill gaps in the candidate's profile with severity"),
   preparationPlan: z
     .array(
       z.object({
-        day: z
-          .number()
-          .describe("The day number in the preparation plan, starting from 1"),
-        focus: z
-          .string()
-          .describe(
-            "The main focus of this day in the preparation plan, e.g. data structures, system design, mock interviews etc.",
-          ),
-        tasks: z
-          .array(z.string())
-          .min(2)
-          .describe(
-            "List of tasks to be done on this day to follow the preparation plan, e.g. read a specific book or article, solve a set of problems, watch a video etc.",
-          ),
+        day: z.number().describe("Day number, starting from 1"),
+        focus: z.string().describe("Main focus of the day, e.g. system design, mock interviews"),
+        tasks: z.array(z.string()).min(2).describe("Tasks to do on this day"),
       }),
     )
     .min(5)
-    .describe(
-      "A day-wise preparation plan for the candidate to follow in order to prepare for the interview effectively",
-    ),
-  title: z
-    .string()
-    .describe(
-      "The title of the job for which the interview report is generated",
-    ),
+    .describe("Day-wise preparation plan"),
+  title: z.string().describe("The job title the report is generated for"),
 });
 
-async function InterViewReportByAi({
-  Resume,
-  selfDescription,
-  jobDescription,
-}) {
-  const prompt = `
-Generate an interview report for this candidate.
-
-Resume: ${Resume}
-Self Description: ${selfDescription}
-Job Description: ${jobDescription}
-
-Return ONLY a JSON object matching EXACTLY this schema:
-{
-  "matchScore": number (0-100),
-  "technicalQuestions": [
-    { "question": string, "intention": string, "answer": string }
+const promptTemplate = ChatPromptTemplate.fromMessages([
+  [
+    "system",
+    `You generate interview preparation reports.
+Requirements:
+- technicalQuestions: at least 3 items
+- behavioralQuestions: at least 3 items
+- skillGaps: at least 4 items
+- preparationPlan: at least 5 days, each with at least 2 tasks
+- No field may be empty or null. Every key must be present.`,
   ],
-  "behavioralQuestions": [
-    { "question": string, "intention": string, "answer": string }
+  [
+    "human",
+    `Generate an interview report for this candidate.
+
+Resume: {resume}
+Self Description: {selfDescription}
+Job Description: {jobDescription}`,
   ],
-  "skillGaps": [
-    { "skill": string, "severity": "low" | "medium" | "high" }
-  ],
-  "preparationPlan": [
-    { "day": number, "focus": string, "tasks": [string] }
-  ],
-  "title": string
-}
+]);
 
-Rules:
-- "technicalQuestions": at least 3 items, each with non-empty question, intention, answer
-- "behavioralQuestions": at least 3 items, each with non-empty question, intention,answer
-- "skillGaps": at least 4 items, each with non-empty skill and a valid severity
-- "preparationPlan": at least 5 days, each with at least 2 tasks
-- No field may be empty, null, "", or []
-- Every array must contain the minimum number of items specified
-- Output raw JSON only. No markdown fences.
-- Every key above MUST be present.
-- "severity" must be "low", "medium", or "high".
-`;
+async function InterViewReportByAi({ Resume, selfDescription, jobDescription }) {
+  const structuredModel = getModel({ temperature: 0.2 }).withStructuredOutput(
+    interviewReportSchema,
+    { name: "interview_report" },
+  );
 
-  const response = await openai.chat.completions.create({
-    model: "nvidia/nemotron-3.5-lightning-30b-a3b",
-
-    messages: [
-      {
-        role: "user",
-        content: prompt,
-      },
-    ],
-
-    response_format: {
-      type: "json_schema",
-      json_schema: {
-        name: "interview_report",
-        strict: true,
-        schema: zodToJsonSchema(interviewReportSchema),
-      },
-    },
-    max_tokens: 8000,
-  });
-
-  const content = response.choices[0].message.content;
-
-  console.log("AI RAW CONTENT:", content);
+  const chain = promptTemplate.pipe(structuredModel);
 
   try {
-    const parsed = JSON.parse(content);
+    const report = await chain.invoke({
+      resume: Resume || "No resume provided",
+      selfDescription: selfDescription || "No self description provided",
+      jobDescription: jobDescription || "No job description provided",
+    });
 
-    const validatedReport = interviewReportSchema.parse(parsed);
-
-    return validatedReport;
+    // Extra safety: validate against the schema
+    return interviewReportSchema.parse(report);
   } catch (error) {
-    console.error("JSON PARSE / VALIDATION ERROR:", error);
-
-    throw new Error("AI returned invalid JSON");
+    console.error("INTERVIEW REPORT ERROR:", error);
+    throw new Error("AI returned invalid report");
   }
 }
 
