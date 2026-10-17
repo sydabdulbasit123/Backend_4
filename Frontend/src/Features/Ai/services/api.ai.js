@@ -1,9 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: import.meta.env.PROD
-    ? "https://backend-4-vgjo.onrender.com"
-    : "",
+  baseURL: "",
   withCredentials: true,
 });
 
