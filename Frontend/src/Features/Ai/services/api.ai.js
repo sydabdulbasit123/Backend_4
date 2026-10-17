@@ -1,16 +1,16 @@
 import axios from "axios";
 
-const api = axios.create({
-  baseURL: import.meta.env.PROD
-    ? "https://backend-4-vgjo.onrender.com"
-    : "",
-  withCredentials: true,
-});
+// const api = axios.create({
+//   baseURL: import.meta.env.PROD
+//     ? "https://backend-4-vgjo.onrender.com"
+//     : "",
+//   withCredentials: true,
+// });
 
 
 export async function interviewReport(formdata) {
   try {
-    const response = await api.post("/api/interview/", formdata);
+    const response = await axios.post("/api/interview/", formdata);
 
     return response.data;
   } catch (err) {
@@ -20,7 +20,7 @@ export async function interviewReport(formdata) {
 }
 export async function getinterviewReport() {
   try {
-    const response = await api.get("/api/interview/interview");
+    const response = await axios.get("/api/interview/interview");
     return response.data;
   } catch (err) {
     console.log("ERROR:", err);
@@ -29,7 +29,7 @@ export async function getinterviewReport() {
 }
 export async function getinterviewReportById(id) {
   try {
-    const response = await api.get(`/api/interview/interview/${id}`);
+    const response = await axios.get(`/api/interview/interview/${id}`);
     return response.data;
   } catch (err) {
     console.log("ERROR:", err);
@@ -38,7 +38,7 @@ export async function getinterviewReportById(id) {
 }
 export async function getallinterviewReport() {
   try {
-    const response = await api.get("/api/interview/allreports");
+    const response = await axios.get("/api/interview/allreports");
     return response.data;
   } catch (err) {
     console.log("ERROR:", err);
@@ -47,7 +47,7 @@ export async function getallinterviewReport() {
 }
 export async function GenerateResume() {
   try {
-    const response = await api.post("/api/resume/generate");
+    const response = await axios.post("/api/resume/generate");
     return response.data;
   } catch (err) {
     console.log("ERROR:", err);
