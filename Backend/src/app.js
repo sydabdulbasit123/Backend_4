@@ -10,11 +10,14 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://ai-job-support-alpha.vercel.app",
+  "https://backend-4-lsw9ijecj-syed-61e5.vercel.app",
+];
+
 app.use(cors({
-  origin: [
-    "http://localhost:5173",
-    "https://ai-job-support-alpha.vercel.app"
-  ],
+  origin: allowedOrigins,
   credentials: true,
 }));
 
